@@ -1,0 +1,8 @@
+logo: /assets/img/favicons/falcon.png
+name: 项目
+menus:
+  - id: api
+    icon: api
+    name: API
+
+

@@ -1,0 +1,12 @@
+logo: /assets/img/favicons/falcon.png
+name: 应用
+menus:
+  - id: debug
+    icon: bug_report
+    name: Debug
+    menus:
+    - id: api
+      icon: api
+      name: API
+
+

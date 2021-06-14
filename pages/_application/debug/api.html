@@ -1,0 +1,96 @@
+---
+title: API
+---
+
+<div id="api">
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card ">
+        <div class="card-header card-header-rose card-header-icon">
+          <div class="card-icon">
+            <i class="material-icons">mail_outline</i>
+          </div>
+          <h4 class="card-title">Stacked Form</h4>
+        </div>
+        <div class="card-body ">
+          <form method="#" action="#">
+            <div class="form-group bmd-form-group">
+              <label for="exampleEmail" class="bmd-label-floating">Request Pattern</label>
+              <input type="text" class="form-control" id="exampleEmail" v-model="pattern">
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header card-header-rose card-header-icon">
+          <div class="card-icon">
+            <i class="material-icons">assignment</i>
+          </div>
+          <h4 class="card-title">Simple Table</h4>
+        </div>
+        <div class="card-body">
+          <template v-for="(item,index) in requestPatterns">
+            <div class="mb-1 p-1 request" :data-method="item.method"
+                 v-if="filterPattern(item,index,pattern)"
+            >
+              <span class="request-method btn btn-sm" v-text="item.method"></span>
+              <span class="ml-2 request-pattern" style=""
+                    v-text="item.pattern"></span>
+              <span class="ml-2" v-text="item.name"></span>
+            </div>
+          </template>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  Vue.createApp({
+    data() {
+      return {
+        pattern: '',
+        requestPatterns: []
+      }
+    },
+    mounted() {
+      this.loadRequestPatterns('amp')
+    },
+
+    methods: {
+      loadRequestPatterns(application) {
+
+        let $this = this;
+
+        axios.get(`/${application}/devops/request/patterns`)
+        .then(function (response) {
+          console.log(response.data);
+          $this.requestPatterns = response.data.data;
+        });
+      },
+
+      filterPattern(item, index, pattern) {
+        if (!pattern) {
+          return true;
+        }
+
+        let text = `${item.method} ${item.pattern} ${item.name}`;
+        return text.toLowerCase().indexOf(pattern.toLowerCase()) >= 0;
+      },
+
+      matches(requestPattern) {
+
+      }
+    }
+
+  })
+  .mount('#api');
+</script>
