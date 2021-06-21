@@ -1,0 +1,101 @@
+title: DevOps
+logo: /assets/img/favicons/falcon.png
+name: Devops
+email: your-email@example.com
+github: https://github.com/likly/final-frameworks
+description: >- # this means to ignore newlines until "baseurl:"
+  Write an awesome description for your new site here. You can edit this
+  line in _config.yml. It will appear in your document head meta (for
+  Google search results) and in your feed.xml site description.
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "/devops" # the base hostname & protocol for your site, e.g. http://example.com
+twitter_username: jekyllrb
+github_username: jekyll
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  input: GFM
+  auto_ids: true
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    # Rouge Options › https://github.com/jneen/rouge#full-options
+    #    line_numbers: false # bad idea, spans don't need linenos and would inherit this option
+    line_format: '%i'
+    table_class: 'rouge-table'
+    span:
+      line_numbers: false
+    block:
+      line_numbers: true
+      start_line: 1
+  html_to_native: true
+  start_line: 1
+  extensions:
+    - autolink
+    - footnotes
+    - smart
+theme: minima
+encoding: UTF-8
+sass:
+  sass_dir: _sass
+  style: compressed
+# Plugins
+plugins:
+  - jekyll-feed
+  #- jekyll-coffeescript
+  #  - jekyll-default-layout
+  #- jekyll-gist
+  #  - jekyll-github-metadata
+  #- jekyll-optional-front-matter
+  #- jekyll-paginate
+  - jekyll-readme-index
+  #- jekyll-titles-from-headings
+  - jekyll-relative-links
+#data_dir: datas
+collections_dir: cloud
+collections:
+  devops:
+    output: true
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: dashboard
+      output: true
+      author: likly
+      banner: /assets/images/banner/spring-banner.png
+# 插件配置
+gist:
+  noscript: false
+readme_index:
+  enabled: true
+  remove_originals: true
+  with_frontmatter: false
+relative_links:
+  enabled: true
+  collections: true
+include:
+  - data
+toc:
+  enable: true
+  min_level: 2
+  max_level: 4
+  headers: h2,h3,h4,h5,h6
+  list_class: ""
+  item_class: "nav-item toc-entry"
+final:
+  version: 1.0.2
+exclude:
+  - .idea/
+# Exclude from processing.
+# The following items will not be processed, by default. Create a custom list
+# to override the default setting.
+# exclude:
+#   - Gemfile
+#   - Gemfile.lock
+#   - node_modules
+#   - vendor/bundle/
+#   - vendor/cache/
+#   - vendor/gems/
+#   - vendor/ruby/

@@ -1,0 +1,41 @@
+<nav class="navbar navbar-color-on-scroll fixed-top navbar-expand-lg  bg-primary"
+     color-on-scroll="100"
+     id="navbar">
+  <div class="container-fluid">
+    <div class="navbar-translate">
+      <a class="navbar-brand" href="{{ site.url }}">{{ site.title}}</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" aria-expanded="false"
+              aria-label="Toggle navigation">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="navbar-toggler-icon"></span>
+        <span class="navbar-toggler-icon"></span>
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ml-auto mr-5">
+        <li class="nav-item">
+          <a class="nav-link" href="{{site.github}}" target="_blank" rel="noopener"><i class="material-icons">star</i>
+            点赞关注
+            <div class="ripple-container"></div>
+          </a>
+        </li>
+        <!--Resources-->
+        <li class="nav-item dropdown">
+          <a class="nav-item nav-link dropdown-toggle mr-md-2" href="{{page.url}}" id="bd-versions"
+             data-toggle="dropdown"
+             aria-haspopup="true">
+            <i class="material-icons">apps</i>
+            <span v-text="selectedResource"></span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="bd-versions">
+            <a class="dropdown-item dropdown-flag-holder" v-for="resource in resources" :class=" resource.name == selectedResource ? 'active' : ''" @click="changeResource(resource)" v-html="resource.name"></a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  {% include navbar/github-corner.html %}
+
+</nav>

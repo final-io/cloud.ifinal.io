@@ -1,0 +1,188 @@
+---
+title: 方法调试
+---
+
+<div id="method">
+  <!--方法查询-->
+  <div class="row">
+    <div class="col-12">
+      <form id="LoginValidation" action="" method="" novalidate="novalidate">
+        <div class="card ">
+          <div class="card-header card-header-rose card-header-icon">
+            <div class="card-icon">
+              <i class="material-icons">search</i>
+            </div>
+            <h4 class="card-title">方法调试</h4>
+          </div>
+          <div class="card-body">
+            <!-- 类 -->
+            <div class="form-group bmd-form-group">
+              <label for="class" class="bmd-label-floating"> Class *</label>
+              <input type="text" class="form-control" id="class" required="true" name="class"
+                     aria-required="true" v-model="params.class">
+            </div>
+            <!-- 方法列表 -->
+            <div class="form-group bmd-form-group text-transform-none" v-show="selectedMethod != null">
+              <select class="selectpicker" v-model="selectedMethod" style="width: 100%; min-width: 100% !important;"
+                      data-style="select-with-transition" title="Choose Method"
+                      data-size="7" tabindex="-98">
+                <option style="text-transform: none" v-for="(item,index) in methods" :value="index"
+                        v-text="formatMethod(item)"></option>
+              </select>
+            </div>
+            <!-- 参数列表 -->
+            <div class="row" v-if="selectedMethod != null">
+              <div class="col-12">
+                <h6>参数列表</h6>
+              </div>
+              <div class="col-12">
+                <div class="table-responsive">
+                  <table class="table">
+                    <thead class=" text-primary">
+                    <tr>
+                      <th class="text-right">#</th>
+                      <th class="text-center">名称</th>
+                      <th class="text-center">类型</th>
+                      <th class="text-center">描述</th>
+                      <th>值(Json)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(parameter,index) in methods[selectedMethod].parameters">
+                      <td v-text="index + 1">序号</td>
+                      <td class="text-center" v-text="parameter.name">参数名称</td>
+                      <td  class="text-center">
+                        <span class="badge badge-info text-transform-none" v-text="parameter.type.replace('java.lang.','')">参数类型</span>
+                      </td>
+                      <td class="text-center" v-text="parameter.summary">参数描述</td>
+                      <td style="min-width: 50vw">
+                        <input style="width: 100%" type="text" class="form-control" placeholder=""
+                               v-model="parameter.value">
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="row " v-if="selectedMethod != null">
+              <div class="col-12">
+                <h6>结果</h6>
+              </div>
+              <div class="col-12 markdown">
+                <pre>
+                    <code class="language-json" v-text="JSON.stringify(result,null,4)"></code>
+                </pre>
+              </div>
+            </div>
+
+          </div>
+          <div class="card-footer ml-auto">
+            <button type="button" class="btn btn-primary" v-show="methods.length == 0" @click="findMethod()">Search
+            </button>
+            <button type="button" class="btn btn-danger" v-show="selectedMethod != null"
+                    @click="debug(methods[selectedMethod])">Debug
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  Vue.createApp({
+    data() {
+      return {
+        params: {
+          class: 'org.ifinalframework.cloud.amp.api.controller.ApplicationApiController',
+          method: null,
+          types: []
+        },
+        resource: window.localStorage.getItem("resourcePath"),
+        methods: [],
+        selectedMethod: null,
+        result: null,
+        method: {
+          summary: "方法概要",
+          sign: 'controller.test(java.lang.String)',
+          parameters: [
+            {
+              name: "code",
+              type: "java.lang.String",
+              summary: "编码",
+              value: null
+            },
+          ]
+        }
+      }
+    },
+    mounted() {
+      console.log("resource:" + this.resource);
+      if (this.params.class) {
+        this.findMethod();
+      }
+    },
+
+    methods: {
+      findMethod() {
+        let $this = this;
+        axios.get(`${$this.resource}/methods`, {
+          params: $this.params
+        })
+        .then(function (response) {
+          console.log(response.data);
+          $this.methods = response.data.data;
+          if ($this.methods.length > 0) {
+            $this.selectedMethod = 0;
+          }
+          setTimeout(function () {
+            $(".selectpicker").selectpicker('refresh');
+          }, 500);
+        });
+      },
+      /**
+       * 格式化方法展示
+       * @param method 方法
+       * @returns {string}
+       */
+      formatMethod(method) {
+        let splits = method.signature.split(" ");
+        let signature = splits[splits.length - 1].replace("java.lang.","").replace(this.params.class, "");
+        return `${method.summary}-${signature}`;
+      },
+      debug(method) {
+        let $this = this;
+        axios.post(`${$this.resource}/methods/debug`, {
+          class: $this.params.class,
+          method: method.name,
+          types: JSON.stringify(method.parameters.map(it => it.type)),
+          args: JSON.stringify(method.parameters.map(it => it.value))
+        }, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          transformRequest: [function (data) {
+            // Do whatever you want to transform the data
+            let ret = ''
+            for (let it in data) {
+              ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+            }
+            return ret
+          }]
+        })
+        .then(function (response) {
+          console.log(response.data);
+          $this.result = response.data;
+          setTimeout(function () {
+            hljs.highlightAll();
+          }, 500);
+
+        })
+      }
+    }
+
+  })
+  .mount('#method');
+</script>

@@ -1,0 +1,73 @@
+{% assign paths = page.path | replace: '_', '' | replace: '.md' : '' | replace: '.html' : '' | split: '/' %}
+<script>
+  Vue.createApp({
+    data() {
+      return {
+        //filter: $.cookie('sidebar-filter'),
+        //color: $.cookie('sidebar-color'),
+        //mini: $.cookie('sidebar_mini'),
+        page: {
+          collection: "{{ page.collection }}",
+          paths: {{ paths | jsonify }},
+          title: "{{ page.title }}",
+          menus: [],
+          module: "{{ module }}",
+        },
+        modules: {{ site.data.modules | jsonify }},
+        theme: "light",
+        sidebar: {{ site.data.sidebar[page.collection] | jsonify }}
+      }
+    },
+    mounted() {
+
+      this.page.menus = this.page.paths.slice(1);
+
+      console.log(this.sidebar);
+      console.log(this.page.paths);
+      console.log(this.page.menus);
+    }
+  })
+  .mount('#sidebar');
+
+  Vue.createApp({
+    data() {
+      return {
+        resources: [],
+        selectedResource: window.localStorage.getItem("resource")
+      }
+    },
+    watch: {
+      selectedResource() {
+        console.log("resource:" + this.selectedResource);
+        window.localStorage.setItem("resource", this.selectedResource);
+        window.location.reload();
+      }
+    },
+
+    mounted() {
+      this.loadResources();
+    },
+
+    methods: {
+      loadResources() {
+        let $this = this;
+        axios.get('/resources')
+        .then(function (response) {
+          console.log(response.data);
+          $this.resources = response.data.data;
+
+          if ($this.selectedResource == null) {
+            $this.selectedResource = $this.resources[0].name;
+          }
+
+        });
+      },
+      changeResource(resource) {
+        this.selectedResource = resource.name;
+        window.localStorage.setItem("resourcePath",resource.path);
+      }
+    }
+
+  })
+  .mount('#navbar');
+</script>

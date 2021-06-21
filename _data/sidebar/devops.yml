@@ -1,0 +1,24 @@
+logo: /assets/img/favicons/falcon.png
+name: DevOps
+menus:
+  - id: index
+    icon: dashboard
+    name: Dashboard
+  - id: debug
+    icon: bug_report
+    name: Debug
+    menus:
+      - id: method
+        icon: api
+        name: 方法调试
+#  - id: logger
+#    icon: api
+#    name: Logger
+#  - id: api
+#    icon: api
+#    name: API
+#  - id: redis
+#    icon: api
+#    name: Redis
+
+
