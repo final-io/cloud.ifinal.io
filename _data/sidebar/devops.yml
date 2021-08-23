@@ -11,6 +11,9 @@ menus:
       - id: method
         icon: api
         name: 方法调试
+      - id: jad
+        icon: coffee
+        name: Jad
 #  - id: logger
 #    icon: api
 #    name: Logger

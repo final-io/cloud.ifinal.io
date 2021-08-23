@@ -1,0 +1,161 @@
+---
+title: Jad
+---
+
+<div id="method">
+    <!--方法查询-->
+    <div class="row">
+        <div class="col-12">
+            <div class="card ">
+                <div class="card-body">
+                    <div class="form-group ">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="class" required="true" name="class"
+                                   aria-required="true" v-model="params.class">
+                            <span class="input-group-btn">
+                                    <button type="button" class="btn btn-fab btn-round btn-primary"
+                                            @click="findMethod()">
+                                        <i class="material-icons">coffee</i>
+                                    </button>
+                                </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card ">
+                <div class="card-header card-header-rose card-header-icon">
+                    <div class="card-icon">
+                        <i class="material-icons">search</i>
+                    </div>
+                    <h4 class="card-title">Jad</h4>
+
+                </div>
+                <div class="card-body">
+                    <!-- 类 -->
+                    <div class="col-12 markdown" v-if="result != null">
+                        <textarea style="width: 100%" rows="30" v-model="result.data"></textarea>
+                    </div>
+                </div>
+                <div class="card-footer ml-auto">
+                    <button type="button" class="btn btn-primary" @click="compile()">Compile</button>
+                    <button type="button" class="btn btn-danger" @click="replace()">Replace</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    Vue.createApp({
+        data() {
+            return {
+                params: {
+                    class: 'org.ifinalframework.java.api.JavaApiController',
+                    method: null,
+                    types: []
+                },
+                resource: window.localStorage.getItem("resourcePath"),
+                methods: [],
+                selectedMethod: null,
+                result: null,
+                method: {
+                    summary: "方法概要",
+                    sign: 'controller.test(java.lang.String)',
+                    parameters: [
+                        {
+                            name: "code",
+                            type: "java.lang.String",
+                            summary: "编码",
+                            value: null
+                        },
+                    ]
+                }
+            }
+        },
+        mounted() {
+            console.log("resource:" + this.resource);
+            if (this.params.class) {
+                this.findMethod();
+            }
+        },
+
+        methods: {
+            findMethod() {
+                let $this = this;
+                axios.get(`${$this.resource}/java/jad`, {
+                    params: $this.params
+                })
+                    .then(function (response) {
+                        console.log(response.data);
+                        $this.result = response.data;
+                        setTimeout(function () {
+                            hljs.highlightAll();
+                        }, 500);
+                    });
+            },
+            /**
+             * 编译
+             */
+            compile() {
+                let $this = this;
+                axios.post(`${$this.resource}/java/compile`, {
+                    class: $this.params.class,
+                    source: $this.result.data,
+                }, {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    transformRequest: [function (data) {
+                        // Do whatever you want to transform the data
+                        let ret = ''
+                        for (let it in data) {
+                            ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+                        }
+                        return ret
+                    }]
+                })
+                    .then(function (response) {
+                        console.log(response.data);
+                        $this.result = response.data;
+                        setTimeout(function () {
+                            hljs.highlightAll();
+                        }, 500);
+
+                    })
+            },
+            /**
+             * 替换
+             */
+            replace() {
+                let $this = this;
+                axios.post(`${$this.resource}/java/replace`, {
+                    class: $this.params.class,
+                    source: $this.result.data,
+                }, {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    transformRequest: [function (data) {
+                        // Do whatever you want to transform the data
+                        let ret = ''
+                        for (let it in data) {
+                            ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+                        }
+                        return ret
+                    }]
+                })
+                    .then(function (response) {
+                        console.log(response.data);
+                        $this.result = response.data;
+                        setTimeout(function () {
+                            hljs.highlightAll();
+                        }, 500);
+
+                    })
+            }
+        }
+
+    }).mount('#method');
+</script>
